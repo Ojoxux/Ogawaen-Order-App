@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
-  VStack,
+  Box,
   Heading,
-  Input,
-  Button,
-  useToast,
   Table,
   Thead,
   Tbody,
   Tr,
   Th,
   Td,
+  Button,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -19,58 +17,24 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
-import { registerEmployee, getEmployees, deleteEmployee, Employee } from '../services/auth';
+import { getEmployees, deleteEmployee } from '../services/auth';
+import { Employee } from '../types';
 
 const EmployeeManagement: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
   useEffect(() => {
+    const fetchEmployees = async () => {
+      const employees = await getEmployees();
+      setEmployees(employees);
+    };
     fetchEmployees();
   }, []);
-
-  const fetchEmployees = async () => {
-    try {
-      const fetchedEmployees = await getEmployees();
-      setEmployees(fetchedEmployees);
-    } catch (error) {
-      toast({
-        title: '従業員の取得に失敗しました',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await registerEmployee(email, password);
-      toast({
-        title: '従業員登録成功',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-      setEmail('');
-      setPassword('');
-      fetchEmployees();
-    } catch (error) {
-      toast({
-        title: '従業員登録失敗',
-        description: error instanceof Error ? error.message : '不明なエラーが発生しました',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
 
   const handleDeleteClick = (employee: Employee) => {
     setSelectedEmployee(employee);
@@ -79,53 +43,21 @@ const EmployeeManagement: React.FC = () => {
 
   const handleDeleteConfirm = async () => {
     if (selectedEmployee) {
-      try {
-        await deleteEmployee(selectedEmployee.id);
-        toast({
-          title: '従業員削除成功',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        });
-        fetchEmployees();
-      } catch (error) {
-        toast({
-          title: '従業員削除失敗',
-          description: '従業員の削除中にエラーが発生しました',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      await deleteEmployee(selectedEmployee.id);
+      setEmployees((prev) => prev.filter((emp) => emp.id !== selectedEmployee.id));
+      toast({
+        title: '従業員削除',
+        description: `${selectedEmployee.username} を削除しました`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      onClose();
     }
-    onClose();
   };
 
   return (
-    <VStack spacing={8} align="stretch">
-      <Heading size="md">従業員管理</Heading>
-
-      <form onSubmit={handleRegister}>
-        <VStack spacing={4}>
-          <Input
-            placeholder="ユーザー名"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <Input
-            type="password"
-            placeholder="パスワード"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <Button type="submit" colorScheme="teaGreen">
-            従業員を登録
-          </Button>
-        </VStack>
-      </form>
-
+    <Box>
       <Heading size="sm">従業員一覧</Heading>
       <Table variant="simple">
         <Thead>
@@ -168,7 +100,7 @@ const EmployeeManagement: React.FC = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </VStack>
+    </Box>
   );
 };
 
