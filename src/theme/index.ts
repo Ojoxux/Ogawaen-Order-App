@@ -1,18 +1,40 @@
-import { extendTheme } from "@chakra-ui/react";
+import { extendTheme } from '@chakra-ui/react';
 
 const theme = extendTheme({
   colors: {
-    brand: {
-      50: "#e8f5e9",
-      100: "#c8e6c9",
-      500: "#4caf50",
-      700: "#388e3c",
-      900: "#1b5e20",
+    teaGreen: {
+      50: '#f0f9f0',
+      100: '#d8ecd7',
+      200: '#b8d9b7',
+      300: '#93c291',
+      400: '#6fa96d',
+      500: '#528b50',
+      600: '#406f3f',
+      700: '#2f522e',
+      800: '#1e351e',
+      900: '#0d180d',
     },
   },
-  fonts: {
-    heading: '"Noto Sans JP", sans-serif',
-    body: '"Noto Sans JP", sans-serif',
+  styles: {
+    global: {
+      body: {
+        bg: 'teaGreen.50',
+        color: 'teaGreen.800',
+        fontFamily: 'Noto Serif JP, serif',
+      },
+    },
+  },
+  components: {
+    Button: {
+      defaultProps: {
+        colorScheme: 'teaGreen',
+      },
+    },
+    Input: {
+      defaultProps: {
+        focusBorderColor: 'teaGreen.400',
+      },
+    },
   },
 });
 
