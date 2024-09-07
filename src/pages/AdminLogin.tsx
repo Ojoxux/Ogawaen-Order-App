@@ -28,6 +28,17 @@ const AdminLogin: React.FC = () => {
     }
   };
 
+  // 開発用のログインスキップ関数
+  const handleSkipLogin = () => {
+    const devUser = {
+      uid: 'dev-user',
+      email: 'dev@example.com',
+      displayName: 'Dev User',
+    };
+    login(devUser as any); // 型を無視してキャスト
+    navigate('/admin-dashboard', { state: { loginSuccess: true } });
+  };
+
   return (
     <Container maxW="md" centerContent>
       <Box
@@ -74,6 +85,10 @@ const AdminLogin: React.FC = () => {
               _hover={{ bg: 'teaGreen.600' }}
             >
               ログイン
+            </Button>
+            {/* 開発用のログインスキップボタン */}
+            <Button colorScheme="gray" width="100%" size="lg" onClick={handleSkipLogin}>
+              ログインをスキップ
             </Button>
           </VStack>
         </form>

@@ -7,6 +7,8 @@ interface AuthContextType {
   loading: boolean;
   isLoggedIn: boolean;
   login: (user: User) => void;
+  logout: () => Promise<void>;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -14,6 +16,8 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   isLoggedIn: false,
   login: () => {},
+  logout: () => Promise.resolve(),
+  setUser: () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -24,6 +28,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = (user: User) => {
     setUser(user);
     setIsLoggedIn(true);
+  };
+
+  const logout = async () => {
+    await auth.signOut();
+    setUser(null);
+    setIsLoggedIn(false);
   };
 
   useEffect(() => {
@@ -37,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, isLoggedIn, login }}>
+    <AuthContext.Provider value={{ user, loading, isLoggedIn, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );
