@@ -26,6 +26,7 @@ import {
   Image,
   Box,
 } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import {
   getProducts,
@@ -41,6 +42,9 @@ interface Product {
   price: number;
   image: string;
 }
+
+const MotionVStack = motion(VStack);
+const MotionBox = motion(Box);
 
 const ProductManagement: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -152,9 +156,14 @@ const ProductManagement: React.FC = () => {
   );
 
   return (
-    <VStack spacing={5} align="stretch">
+    <MotionVStack
+      spacing={5}
+      align="stretch"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <Heading size="md">商品管理</Heading>
-
       <Button leftIcon={<AddIcon />} onClick={() => setIsAddModalOpen(true)}>
         新規商品を追加
       </Button>
@@ -197,74 +206,74 @@ const ProductManagement: React.FC = () => {
       {/* 新規商品追加モーダル */}
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
         <ModalOverlay />
-        <ModalContent bg="sakuraPink.50" borderColor="sakuraPink.200" borderWidth="1px">
-          <ModalHeader color="sakuraPink.700">新規商品を追加</ModalHeader>
+        <MotionBox
+          as={ModalContent}
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <ModalHeader>新規商品を追加</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={3}>
               <FormControl>
-                <FormLabel color="sakuraPink.700">商品名</FormLabel>
+                <FormLabel>商品名</FormLabel>
                 <Input
                   value={newProduct.name}
                   onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                  borderColor="sakuraPink.200"
-                  _focus={{ borderColor: 'sakuraPink.400', boxShadow: '0 0 0 1px #ff8091' }}
                 />
               </FormControl>
               <FormControl>
-                <FormLabel color="sakuraPink.700">価格</FormLabel>
+                <FormLabel>価格</FormLabel>
                 <NumberInput
                   value={newProduct.price}
                   onChange={(_, value) => setNewProduct({ ...newProduct, price: value })}
                 >
-                  <NumberInputField
-                    borderColor="sakuraPink.200"
-                    _focus={{ borderColor: 'sakuraPink.400', boxShadow: '0 0 0 1px #ff8091' }}
-                  />
+                  <NumberInputField />
                 </NumberInput>
               </FormControl>
               {renderImageUpload(false)}
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="sakuraPink" mr={3} onClick={handleAddProduct}>
+            <Button colorScheme="blue" mr={3} onClick={handleAddProduct}>
               追加
             </Button>
             <Button variant="ghost" onClick={() => setIsAddModalOpen(false)}>
               キャンセル
             </Button>
           </ModalFooter>
-        </ModalContent>
+        </MotionBox>
       </Modal>
 
       {/* 商品編集モーダル */}
       <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
         <ModalOverlay />
-        <ModalContent bg="sakuraPink.50" borderColor="sakuraPink.200" borderWidth="1px">
-          <ModalHeader color="sakuraPink.700">商品を編集</ModalHeader>
+        <MotionBox
+          as={ModalContent}
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <ModalHeader>商品を編集</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {editingProduct && (
               <VStack spacing={3}>
                 <FormControl>
-                  <FormLabel color="sakuraPink.700">商品名</FormLabel>
+                  <FormLabel>商品名</FormLabel>
                   <Input
                     value={editingProduct.name}
                     onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
-                    borderColor="sakuraPink.200"
-                    _focus={{ borderColor: 'sakuraPink.400', boxShadow: '0 0 0 1px #ff8091' }}
                   />
                 </FormControl>
                 <FormControl>
-                  <FormLabel color="sakuraPink.700">価格</FormLabel>
+                  <FormLabel>価格</FormLabel>
                   <NumberInput
                     value={editingProduct.price}
                     onChange={(_, value) => setEditingProduct({ ...editingProduct, price: value })}
                   >
-                    <NumberInputField
-                      borderColor="sakuraPink.200"
-                      _focus={{ borderColor: 'sakuraPink.400', boxShadow: '0 0 0 1px #ff8091' }}
-                    />
+                    <NumberInputField />
                   </NumberInput>
                 </FormControl>
                 {renderImageUpload(true)}
@@ -272,16 +281,16 @@ const ProductManagement: React.FC = () => {
             )}
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="sakuraPink" mr={3} onClick={handleUpdateProduct}>
+            <Button colorScheme="blue" mr={3} onClick={handleUpdateProduct}>
               更新
             </Button>
             <Button variant="ghost" onClick={() => setIsEditModalOpen(false)}>
               キャンセル
             </Button>
           </ModalFooter>
-        </ModalContent>
+        </MotionBox>
       </Modal>
-    </VStack>
+    </MotionVStack>
   );
 };
 
