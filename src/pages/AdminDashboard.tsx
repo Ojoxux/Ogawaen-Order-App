@@ -9,6 +9,7 @@ import {
   IconButton,
   Text,
   VStack,
+  Spacer,
   Avatar,
   Modal,
   ModalOverlay,
@@ -19,8 +20,9 @@ import {
   ModalCloseButton,
   Button,
   Input,
+  Divider,
 } from '@chakra-ui/react';
-import { FiPackage, FiUsers } from 'react-icons/fi';
+import { FiPackage, FiUsers, FiLogOut } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
 import KitchenOrderDisplay from '../components/KitchenOrderDisplay';
 import ProductManagement from '../components/ProductManagement';
@@ -107,70 +109,100 @@ const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <Flex h="100vh">
-      <Box w="250px" bg="green.800" color="white" p={4}>
-        <VStack align="start" spacing={4}>
-          <Heading size="md">尾川園管理者画面</Heading>
+    <Flex h="100vh" bg="gray.100">
+      <Box w="250px" bg="white" boxShadow="md" p={4}>
+        <VStack align="start" spacing={4} h="100%">
+          <Heading size="md" color="green.800">
+            尾川園管理者画面
+          </Heading>
+          <Divider />
           <Flex
             align="center"
             w="100%"
             onClick={() => setSelectedComponent('orders')}
-            _hover={{ transform: 'scale(1.05)', transition: 'transform 0.2s' }}
+            _hover={{ bg: 'green.50', transition: 'background-color 0.2s' }}
+            p={2}
+            borderRadius="md"
           >
             <IconButton
               aria-label="Orders"
               icon={<FiPackage />}
               variant="ghost"
-              colorScheme="whiteAlpha"
+              colorScheme="green"
               isRound
             />
-            <Text ml={2}>注文</Text>
+            <Text ml={2} color="green.800">
+              注文
+            </Text>
           </Flex>
           <Flex
             align="center"
             w="100%"
             onClick={() => setSelectedComponent('products')}
-            _hover={{ transform: 'scale(1.05)', transition: 'transform 0.2s' }}
+            _hover={{ bg: 'green.50', transition: 'background-color 0.2s' }}
+            p={2}
+            borderRadius="md"
           >
             <IconButton
               aria-label="Products"
               icon={<FiUsers />}
               variant="ghost"
-              colorScheme="whiteAlpha"
+              colorScheme="green"
               isRound
             />
-            <Text ml={2}>商品管理</Text>
+            <Text ml={2} color="green.800">
+              商品管理
+            </Text>
           </Flex>
           <Flex
             align="center"
             w="100%"
             onClick={() => setSelectedComponent('employees')}
-            _hover={{ transform: 'scale(1.05)', transition: 'transform 0.2s' }}
+            _hover={{ bg: 'green.50', transition: 'background-color 0.2s' }}
+            p={2}
+            borderRadius="md"
           >
             <IconButton
               aria-label="Employees"
               icon={<FiUsers />}
               variant="ghost"
-              colorScheme="whiteAlpha"
+              colorScheme="green"
               isRound
             />
-            <Text ml={2}>従業員</Text>
+            <Text ml={2} color="green.800">
+              従業員
+            </Text>
           </Flex>
+          <Spacer />
+          <Button
+            leftIcon={<FiLogOut />}
+            variant="solid"
+            colorScheme="red"
+            onClick={handleLogout}
+            w="100%"
+          >
+            ログアウト
+          </Button>
         </VStack>
       </Box>
       <Box flex="1" p={4}>
         <Flex justify="space-between" align="center" mb={4}>
-          <Heading size="lg">管理ダッシュボード</Heading>
+          <Heading size="lg" color="green.800">
+            管理ダッシュボード
+          </Heading>
           <Avatar
             name={user?.displayName ?? ''}
             src={user?.photoURL ?? ''}
             onClick={onOpen}
             cursor="pointer"
+            border="2px solid"
+            borderColor="green.800"
           />
         </Flex>
-        <Box>{renderComponent()}</Box>
+        <Box bg="white" p={4} borderRadius="md" boxShadow="md">
+          {renderComponent()}
+        </Box>
       </Box>
-
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
