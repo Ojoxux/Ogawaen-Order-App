@@ -45,8 +45,14 @@ export const getProducts = async (): Promise<Product[]> => {
     (doc) =>
       ({
         id: doc.id,
-        ...doc.data(),
-        image: doc.data().image || '', // 画像がない場合は空文字を返す
+        name: doc.data().name || '',
+        price: doc.data().price || 0,
+        tags: doc.data().tags || [],
+        image: doc.data().image || '',
+        tag: doc.data().tag || '',
+        description: doc.data().description || '',
+        allergens: doc.data().allergens || '',
+        isRecommended: doc.data().isRecommended || false, // おすすめプロパティを追加
       }) as Product
   );
 };
@@ -90,4 +96,24 @@ export const uploadImage = async (file: File): Promise<string> => {
     }
     throw new Error('画像のアップロードに失敗しました');
   }
+};
+
+export const getCategories = async (): Promise<{ id: string; name: string }[]> => {
+  const querySnapshot = await getDocs(collection(db, 'categories'));
+  return querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    name: doc.data().name,
+  }));
+};
+
+export const addCategory = async (name: string) => {
+  await addDoc(collection(db, 'categories'), { name });
+};
+
+export const updateCategory = async (id: string, name: string) => {
+  await updateDoc(doc(db, 'categories', id), { name });
+};
+
+export const deleteCategory = async (id: string) => {
+  await deleteDoc(doc(db, 'categories', id));
 };
