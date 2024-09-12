@@ -1,116 +1,87 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  VStack,
-  Heading,
+  Box,
   Button,
-  Input,
   FormControl,
   FormLabel,
-  NumberInput,
-  NumberInputField,
+  Image,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useToast,
+  VStack,
+  Heading,
   Table,
   Thead,
   Tbody,
   Tr,
   Th,
   Td,
+  NumberInput,
+  NumberInputField,
   IconButton,
-  useToast,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Image,
-  Box,
+  Checkbox,
 } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
-import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
+import { AddIcon, EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import {
+  uploadImage,
+  deleteProduct,
   getProducts,
   addProduct,
   updateProduct,
-  deleteProduct,
-  uploadImage,
+  getCategories,
+  addCategory,
+  updateCategory,
+  deleteCategory,
 } from '../services/firebase';
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-}
-
-const MotionVStack = motion(VStack);
-const MotionBox = motion(Box);
-
 const ProductManagement: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [newProduct, setNewProduct] = useState({ name: '', price: 0, image: '' });
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [newProduct, setNewProduct] = useState<any>({
+    name: '',
+    price: 0,
+    image: '',
+    tag: '',
+    description: '',
+    allergens: '',
+    isRecommended: false,
+  });
+  const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [newCategory, setNewCategory] = useState<string>('');
+  const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      const fetchedProducts = await getProducts();
+      setProducts(fetchedProducts);
+    };
+    const fetchCategories = async () => {
+      const fetchedCategories = await getCategories();
+      setCategories(fetchedCategories);
+    };
     fetchProducts();
+    fetchCategories();
   }, []);
 
-  const fetchProducts = async () => {
-    const fetchedProducts = await getProducts();
-    setProducts(fetchedProducts);
-  };
-
-  const handleAddProduct = async () => {
-    try {
-      await addProduct(newProduct);
-      setNewProduct({ name: '', price: 0, image: '' });
-      setIsAddModalOpen(false);
-      fetchProducts();
-      toast({ title: '商品を追加しました', status: 'success' });
-    } catch (error) {
-      toast({ title: '商品の追加に失敗しました', status: 'error' });
-    }
-  };
-
-  const handleUpdateProduct = async () => {
-    if (editingProduct) {
-      try {
-        await updateProduct(editingProduct.id, editingProduct);
-        setEditingProduct(null);
-        setIsEditModalOpen(false);
-        fetchProducts();
-        toast({ title: '商品を更新しました', status: 'success' });
-      } catch (error) {
-        toast({ title: '商品の更新に失敗しました', status: 'error' });
-      }
-    }
-  };
-
-  const handleDeleteProduct = async (id: string) => {
-    try {
-      await deleteProduct(id);
-      fetchProducts();
-      toast({ title: '商品を削除しました', status: 'success' });
-    } catch (error) {
-      toast({ title: '商品の削除に失敗しました', status: 'error' });
-    }
-  };
-
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-    isEditing: boolean
-  ) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setIsUploading(true);
       try {
+        setIsUploading(true);
         const imageUrl = await uploadImage(file);
-        if (isEditing && editingProduct) {
+        if (editingProduct) {
           setEditingProduct({ ...editingProduct, image: imageUrl });
         } else {
           setNewProduct({ ...newProduct, image: imageUrl });
@@ -129,13 +100,97 @@ const ProductManagement: React.FC = () => {
     }
   };
 
+  const handleAddProduct = async () => {
+    try {
+      await addProduct(newProduct);
+      setNewProduct({
+        name: '',
+        price: 0,
+        image: '',
+        tag: '',
+        description: '',
+        allergens: '',
+        isRecommended: false,
+      });
+      setIsAddModalOpen(false);
+      const fetchedProducts = await getProducts();
+      setProducts(fetchedProducts);
+      toast({ title: '商品を追加しました', status: 'success' });
+    } catch (error) {
+      toast({ title: '商品の追加に失敗しました', status: 'error' });
+    }
+  };
+
+  const handleUpdateProduct = async () => {
+    if (editingProduct) {
+      try {
+        await updateProduct(editingProduct.id, editingProduct);
+        setEditingProduct(null);
+        setIsEditModalOpen(false);
+        const fetchedProducts = await getProducts();
+        setProducts(fetchedProducts);
+        toast({ title: '商品を更新しました', status: 'success' });
+      } catch (error) {
+        toast({ title: '商品の更新に失敗しました', status: 'error' });
+      }
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    try {
+      await deleteProduct(id);
+      setProducts((prev) => prev.filter((product) => product.id !== id));
+      toast({ title: '商品を削除しました', status: 'success' });
+    } catch (error) {
+      toast({ title: '商品の削除に失敗しました', status: 'error' });
+    }
+  };
+
+  const handleAddCategory = async () => {
+    try {
+      await addCategory(newCategory);
+      setNewCategory('');
+      setIsCategoryModalOpen(false);
+      const fetchedCategories = await getCategories();
+      setCategories(fetchedCategories);
+      toast({ title: 'カテゴリを追加しました', status: 'success' });
+    } catch (error) {
+      toast({ title: 'カテゴリの追加に失敗しました', status: 'error' });
+    }
+  };
+
+  const handleUpdateCategory = async () => {
+    if (editingCategory) {
+      try {
+        await updateCategory(editingCategory.id, editingCategory.name);
+        setEditingCategory(null);
+        setIsCategoryModalOpen(false);
+        const fetchedCategories = await getCategories();
+        setCategories(fetchedCategories);
+        toast({ title: 'カテゴリを更新しました', status: 'success' });
+      } catch (error) {
+        toast({ title: 'カテゴリの更新に失敗しました', status: 'error' });
+      }
+    }
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    try {
+      await deleteCategory(id);
+      setCategories((prev) => prev.filter((category) => category.id !== id));
+      toast({ title: 'カテゴリを削除しました', status: 'success' });
+    } catch (error) {
+      toast({ title: 'カテゴリの削除に失敗しました', status: 'error' });
+    }
+  };
+
   const renderImageUpload = (isEditing: boolean) => (
     <FormControl>
       <FormLabel>商品画像</FormLabel>
       <Input
         type="file"
         accept="image/*"
-        onChange={(e) => handleImageUpload(e, isEditing)}
+        onChange={(e) => handleImageUpload(e)}
         hidden
         ref={fileInputRef}
       />
@@ -155,25 +210,42 @@ const ProductManagement: React.FC = () => {
     </FormControl>
   );
 
+  const renderCategorySelect = (isEditing: boolean) => (
+    <FormControl>
+      <FormLabel>カテゴリ</FormLabel>
+      <select
+        value={isEditing ? editingProduct?.tag : newProduct.tag}
+        onChange={(e) => {
+          const selectedTag = e.target.value;
+          console.log(`Selected category: ${selectedTag}`);
+          if (isEditing) {
+            setEditingProduct({ ...editingProduct, tag: selectedTag });
+          } else {
+            setNewProduct({ ...newProduct, tag: selectedTag });
+          }
+        }}
+      >
+        {categories.map((category) => (
+          <option key={category.id} value={category.name}>
+            {category.name}
+          </option>
+        ))}
+      </select>
+    </FormControl>
+  );
+
   return (
-    <MotionVStack
-      spacing={5}
-      align="stretch"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <VStack spacing={4} align="stretch">
       <Heading size="md">商品管理</Heading>
       <Button leftIcon={<AddIcon />} onClick={() => setIsAddModalOpen(true)}>
         新規商品を追加
       </Button>
-
-      {/* 商品一覧 */}
       <Table variant="simple">
         <Thead>
           <Tr>
             <Th>商品名</Th>
             <Th>価格</Th>
+            <Th>画像</Th>
             <Th>操作</Th>
           </Tr>
         </Thead>
@@ -182,6 +254,9 @@ const ProductManagement: React.FC = () => {
             <Tr key={product.id}>
               <Td>{product.name}</Td>
               <Td>{product.price}</Td>
+              <Td>
+                <Image src={product.image} alt={product.name} maxH="100px" />
+              </Td>
               <Td>
                 <IconButton
                   aria-label="Edit product"
@@ -203,15 +278,46 @@ const ProductManagement: React.FC = () => {
         </Tbody>
       </Table>
 
+      <Heading size="md">カテゴリ管理</Heading>
+      <Button leftIcon={<AddIcon />} onClick={() => setIsCategoryModalOpen(true)}>
+        新規カテゴリを追加
+      </Button>
+      <Table variant="simple">
+        <Thead>
+          <Tr>
+            <Th>カテゴリ名</Th>
+            <Th>操作</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {categories.map((category) => (
+            <Tr key={category.id}>
+              <Td>{category.name}</Td>
+              <Td>
+                <IconButton
+                  aria-label="Edit category"
+                  icon={<EditIcon />}
+                  onClick={() => {
+                    setEditingCategory(category);
+                    setIsCategoryModalOpen(true);
+                  }}
+                  mr={2}
+                />
+                <IconButton
+                  aria-label="Delete category"
+                  icon={<DeleteIcon />}
+                  onClick={() => handleDeleteCategory(category.id)}
+                />
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+
       {/* 新規商品追加モーダル */}
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
         <ModalOverlay />
-        <MotionBox
-          as={ModalContent}
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <ModalContent>
           <ModalHeader>新規商品を追加</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -232,29 +338,50 @@ const ProductManagement: React.FC = () => {
                   <NumberInputField />
                 </NumberInput>
               </FormControl>
+              <FormControl>
+                <FormLabel>説明</FormLabel>
+                <Input
+                  value={newProduct.description}
+                  onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>アレルギー情報</FormLabel>
+                <Input
+                  value={newProduct.allergens}
+                  onChange={(e) => setNewProduct({ ...newProduct, allergens: e.target.value })}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>おすすめ</FormLabel>
+                <Checkbox
+                  isChecked={newProduct.isRecommended}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, isRecommended: e.target.checked })
+                  }
+                >
+                  おすすめ
+                </Checkbox>
+              </FormControl>
               {renderImageUpload(false)}
+              {renderCategorySelect(false)}
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleAddProduct}>
+            <Button colorScheme="teaGreen" mr={3} onClick={handleAddProduct}>
               追加
             </Button>
             <Button variant="ghost" onClick={() => setIsAddModalOpen(false)}>
               キャンセル
             </Button>
           </ModalFooter>
-        </MotionBox>
+        </ModalContent>
       </Modal>
 
       {/* 商品編集モーダル */}
       <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
         <ModalOverlay />
-        <MotionBox
-          as={ModalContent}
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <ModalContent>
           <ModalHeader>商品を編集</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -276,21 +403,87 @@ const ProductManagement: React.FC = () => {
                     <NumberInputField />
                   </NumberInput>
                 </FormControl>
+                <FormControl>
+                  <FormLabel>説明</FormLabel>
+                  <Input
+                    value={editingProduct.description}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, description: e.target.value })
+                    }
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>アレルギー情報</FormLabel>
+                  <Input
+                    value={editingProduct.allergens}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, allergens: e.target.value })
+                    }
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>おすすめ</FormLabel>
+                  <Checkbox
+                    isChecked={editingProduct.isRecommended}
+                    onChange={(e) =>
+                      setEditingProduct({ ...editingProduct, isRecommended: e.target.checked })
+                    }
+                  >
+                    おすすめ
+                  </Checkbox>
+                </FormControl>
                 {renderImageUpload(true)}
+                {renderCategorySelect(true)}
               </VStack>
             )}
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleUpdateProduct}>
+            <Button colorScheme="teaGreen" mr={3} onClick={handleUpdateProduct}>
               更新
             </Button>
             <Button variant="ghost" onClick={() => setIsEditModalOpen(false)}>
               キャンセル
             </Button>
           </ModalFooter>
-        </MotionBox>
+        </ModalContent>
       </Modal>
-    </MotionVStack>
+
+      {/* カテゴリ追加・編集モーダル */}
+      <Modal isOpen={isCategoryModalOpen} onClose={() => setIsCategoryModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{editingCategory ? 'カテゴリを編集' : '新規カテゴリを追加'}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl>
+              <FormLabel>カテゴリ名</FormLabel>
+              <Input
+                value={editingCategory ? editingCategory.name : newCategory}
+                onChange={(e) => {
+                  if (editingCategory) {
+                    setEditingCategory({ ...editingCategory, name: e.target.value });
+                  } else {
+                    setNewCategory(e.target.value);
+                  }
+                }}
+              />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="teaGreen"
+              mr={3}
+              onClick={editingCategory ? handleUpdateCategory : handleAddCategory}
+            >
+              {editingCategory ? '更新' : '追加'}
+            </Button>
+            <Button variant="ghost" onClick={() => setIsCategoryModalOpen(false)}>
+              キャンセル
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </VStack>
   );
 };
 
