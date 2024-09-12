@@ -60,28 +60,30 @@ const CustomerApp: React.FC = () => {
     <Box pb={20} bg="teaGreen.50">
       <Container maxW="container.md">
         <VStack spacing={8}>
-          <HStack justify="center" w="100%" my={4}>
-            {['テーブル番号', '商品選択', '注文確認'].map((label, index) => (
-              <React.Fragment key={label}>
-                {index > 0 && <Text color="teaGreen.500">-</Text>}
-                <HStack>
-                  <Circle
-                    size="30px"
-                    bg={step >= index ? 'teaGreen.500' : 'teaGreen.100'}
-                    color={step >= index ? 'white' : 'teaGreen.500'}
-                  >
-                    {index + 1}
-                  </Circle>
-                  <Text
-                    color={step >= index ? 'teaGreen.700' : 'teaGreen.400'}
-                    fontWeight={step >= index ? 'bold' : 'normal'}
-                  >
-                    {label}
-                  </Text>
-                </HStack>
-              </React.Fragment>
-            ))}
-          </HStack>
+          <Box mt={8}>
+            <HStack justify="center" w="100%" my={4}>
+              {['テーブル番号', '商品選択', '注文確認'].map((label, index) => (
+                <React.Fragment key={label}>
+                  {index > 0 && <Text color="teaGreen.500">-</Text>}
+                  <HStack>
+                    <Circle
+                      size="30px"
+                      bg={step >= index ? 'teaGreen.500' : 'teaGreen.100'}
+                      color={step >= index ? 'white' : 'teaGreen.500'}
+                    >
+                      {index + 1}
+                    </Circle>
+                    <Text
+                      color={step >= index ? 'teaGreen.700' : 'teaGreen.400'}
+                      fontWeight={step >= index ? 'bold' : 'normal'}
+                    >
+                      {label}
+                    </Text>
+                  </HStack>
+                </React.Fragment>
+              ))}
+            </HStack>
+          </Box>
 
           <Box
             bg="white"
