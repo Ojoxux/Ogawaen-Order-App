@@ -21,6 +21,7 @@ import {
   Button,
   Input,
   Divider,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { FiPackage, FiUsers, FiLogOut } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
@@ -39,6 +40,7 @@ const AdminDashboard: React.FC = () => {
   const [newPhotoURL, setNewPhotoURL] = useState(user?.photoURL ?? '');
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const sidebarWidth = useBreakpointValue({ base: '100%', md: '250px' });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -110,7 +112,15 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <Flex h="100vh" bg="gray.100">
-      <Box w="250px" bg="white" boxShadow="md" p={4}>
+      <Box
+        w={sidebarWidth}
+        bg="white"
+        boxShadow="md"
+        p={4}
+        position="fixed" // サイドバーを固定
+        h="100vh" // サイドバーの高さを全画面に設定
+        overflowY="auto" // サイドバー内でスクロール可能にする
+      >
         <VStack align="start" spacing={4} h="100%">
           <Heading size="md" color="green.800">
             尾川園管理者画面
@@ -185,7 +195,7 @@ const AdminDashboard: React.FC = () => {
           </Button>
         </VStack>
       </Box>
-      <Box flex="1" p={4}>
+      <Box flex="1" p={4} ml={{ base: 0, md: sidebarWidth }}>
         <Flex justify="space-between" align="center" mb={4}>
           <Heading size="lg" color="green.800">
             管理ダッシュボード
