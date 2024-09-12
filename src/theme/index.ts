@@ -20,7 +20,7 @@ const theme = extendTheme({
       body: {
         bg: 'teaGreen.50',
         color: 'teaGreen.800',
-        fontFamily: 'Noto Serif JP, serif',
+        fontFamily: 'Roboto, Helvetica Neue, Arial, sans-serif',
       },
     },
   },
@@ -33,6 +33,11 @@ const theme = extendTheme({
     Input: {
       defaultProps: {
         focusBorderColor: 'teaGreen.400',
+      },
+    },
+    Tag: {
+      baseStyle: {
+        borderRadius: 'full',
       },
     },
   },
