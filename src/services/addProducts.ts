@@ -6,6 +6,7 @@ interface Product {
   name: string;
   price: number;
   description?: string;
+  tags: string;
 }
 
 export const addProduct = async (productData: Product, imageFile: File) => {
@@ -23,6 +24,7 @@ export const addProduct = async (productData: Product, imageFile: File) => {
       ...productData,
       image: imageUrl,
       createdAt: new Date(),
+      tags: productData.tags,
     });
 
     console.log('Product added with ID: ', docRef.id);
