@@ -95,7 +95,7 @@ const ProductSelection: React.FC<ProductSelectionProps> = ({ onAddToCart }) => {
       <Heading as="h2" size="lg" color="teaGreen.700" textAlign="center" mb={4}>
         お品書き
       </Heading>
-      <HStack spacing={4} justify="center" wrap="wrap" mb={6}>
+      <HStack spacing={4} justify="center" wrap={{ base: 'nowrap', md: 'wrap' }} mb={6}>
         {['全て', ...categories].map((tag) => (
           <Button
             size="lg"
@@ -108,6 +108,7 @@ const ProductSelection: React.FC<ProductSelectionProps> = ({ onAddToCart }) => {
             transition="all 0.3s"
             _hover={{ transform: 'scale(1.1)', bg: 'teaGreen.500', color: 'white' }}
             _active={{ transform: 'scale(0.95)' }}
+            fontSize={{ base: 'sm', md: 'md' }}
           >
             {tag}
           </Button>
@@ -174,7 +175,7 @@ const ProductSelection: React.FC<ProductSelectionProps> = ({ onAddToCart }) => {
       {selectedProduct && (
         <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent maxW={{ base: '90%', md: '500px' }}>
             <ModalHeader>{selectedProduct.name}</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
@@ -193,8 +194,17 @@ const ProductSelection: React.FC<ProductSelectionProps> = ({ onAddToCart }) => {
               </VStack>
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme="teaGreen" mr={3} onClick={onClose}>
-                閉じる
+              <Button
+                colorScheme="teaGreen"
+                onClick={() => {
+                  onAddToCart(selectedProduct, 1);
+                  onClose();
+                }}
+                w="100%"
+                bg="teaGreen.400"
+                _hover={{ bg: 'teaGreen.500' }}
+              >
+                カートに追加
               </Button>
             </ModalFooter>
           </ModalContent>
