@@ -13,7 +13,7 @@ dist-ssr
 *.local
 .env
 .history
-hosting.ZGlzA.cache
+.firebase/
 
 # Editor directories and files
 .vscode/*
