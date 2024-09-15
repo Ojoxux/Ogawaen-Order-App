@@ -1,10 +1,7 @@
 import React from 'react';
 import { VStack, Heading, Text, Button, Box } from '@chakra-ui/react';
 
-{
-  /* 注文確定画面 */
-}
-const OrderConfirmation: React.FC = () => {
+const OrderConfirmation: React.FC<{ onNewOrder: () => void }> = ({ onNewOrder }) => {
   return (
     <VStack spacing={6} align="center" p={8} bg="white" borderRadius="lg" boxShadow="md">
       <Heading as="h2" size="xl" color="teaGreen.700">
@@ -20,7 +17,7 @@ const OrderConfirmation: React.FC = () => {
         </Text>
         <Text>準備中</Text>
       </Box>
-      <Button colorScheme="teaGreen" size="lg" onClick={() => window.location.reload()} mt={4}>
+      <Button colorScheme="teaGreen" size="lg" onClick={onNewOrder} mt={4}>
         新しい注文を始める
       </Button>
     </VStack>
