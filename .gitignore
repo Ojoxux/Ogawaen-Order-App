@@ -13,6 +13,7 @@ dist-ssr
 *.local
 .env
 .history
+hosting.ZGlzA.cache
 
 # Editor directories and files
 .vscode/*
