@@ -42,10 +42,22 @@ const CustomerApp: React.FC = () => {
   };
 
   const handlePlaceOrder = async () => {
-    if (tableNumber) {
-      await createOrder({ tableNumber, items: cartItems, status: 'pending' });
+    try {
+      await createOrder({
+        tableNumber: tableNumber!,
+        items: cartItems,
+        status: 'pending',
+      });
       setStep(3);
+    } catch (error) {
+      console.error('Error placing order:', error);
     }
+  };
+
+  const handleNewOrder = () => {
+    setStep(0);
+    setTableNumber(null);
+    setCartItems([]);
   };
 
   const handleViewCart = () => {
@@ -95,7 +107,7 @@ const CustomerApp: React.FC = () => {
             w="100%"
           >
             {step === 0 && <TableNumberConfirmation onConfirm={handleTableNumberConfirm} />}
-            {step === 1 && <ProductSelection onAddToCart={handleAddToCart} />}
+            {step === 1 && <ProductSelection onAddToCart={handleAddToCart} cartItems={cartItems} />}
             {step === 2 && (
               <Cart
                 items={cartItems}
@@ -105,7 +117,7 @@ const CustomerApp: React.FC = () => {
                 onBackToMenu={handleBackToMenu}
               />
             )}
-            {step === 3 && <OrderConfirmation />}
+            {step === 3 && <OrderConfirmation onNewOrder={handleNewOrder} />}
           </Box>
         </VStack>
         {step > 0 && step < 3 && <CartPreview items={cartItems} onViewCart={handleViewCart} />}
