@@ -19,7 +19,7 @@ const CustomerApp: React.FC = () => {
   };
 
   const handleAddToCart = (product: Product, quantity: number) => {
-    setCartItems((prevItems) => {
+    setCartItems((prevItems: CartItem[]) => {
       const existingItem = prevItems.find((item) => item.product.id === product.id);
       if (existingItem) {
         return prevItems.map((item) =>
