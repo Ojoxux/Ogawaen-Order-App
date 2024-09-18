@@ -42,7 +42,7 @@ export const createOrder = async (order: Omit<Order, 'id' | 'timestamp'>) => {
 export const getProducts = async (): Promise<Product[]> => {
   const querySnapshot = await getDocs(collection(db, 'products'));
   return querySnapshot.docs.map(
-    (doc) =>
+    (doc: any) =>
       ({
         id: doc.id,
         name: doc.data().name || '',
@@ -59,8 +59,8 @@ export const getProducts = async (): Promise<Product[]> => {
 
 export const subscribeToOrders = (callback: (orders: Order[]) => void) => {
   const q = query(collection(db, 'orders'), where('status', '==', 'pending'));
-  return onSnapshot(q, (querySnapshot) => {
-    const orders = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Order);
+  return onSnapshot(q, (querySnapshot: any) => {
+    const orders = querySnapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }) as Order);
     callback(orders);
   });
 };
