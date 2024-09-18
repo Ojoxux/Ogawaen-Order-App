@@ -52,7 +52,7 @@ export const getProducts = async (): Promise<Product[]> => {
         tag: doc.data().tag || '',
         description: doc.data().description || '',
         allergens: doc.data().allergens || '',
-        isRecommended: doc.data().isRecommended || false, // おすすめプロパティを追加
+        isRecommended: doc.data().isRecommended || false,
       }) as Product
   );
 };
