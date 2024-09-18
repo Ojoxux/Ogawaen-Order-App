@@ -13,7 +13,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16' # ローカルで使用しているNode.jsのバージョンに合わせる
+          node-version: '18' # Node.jsのバージョンを18に設定
       - run: npm install
       - run: npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
