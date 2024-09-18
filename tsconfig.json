@@ -1,7 +1,8 @@
 {
   "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
+  "conpilerOptions": {
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["node", "react", "react-dom", "react-router-dom", "firebase"]
+  }
 }
